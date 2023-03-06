@@ -1,15 +1,15 @@
-Update #1
+# Update #1
 
-What I have done...
+### What I have done...
 
 I decided to have a server both Mike and I have on digital ocean be the server for telegraf to query via snmp. I am using my raspberry pi as the client to collect the data it gets from the snmp query.
 
 1. My first step was to download telegraf on the client side (my Raspberry pi). I did this by running the following commands
    
-    wget -q https://repos.influxdata.com/influxdata-archive_compat.key
-    echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
-    echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
-    sudo apt-get update && sudo apt-get install telegraf
+       wget -q https://repos.influxdata.com/influxdata-archive_compat.key
+       echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+       echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
+       sudo apt-get update && sudo apt-get install telegraf
 
 2. The next step is to create a configuration file for telegraf, so we can establish an input via snmp and an output of prometheus. You can see from the telgraf.conf what that would look like.
 
@@ -28,7 +28,7 @@ If it wasn't running, I simply started it by running...
 
 The enabled command has it start automatically everytime the system boots.
 
-What I am having trouble with...
+### What I am having trouble with...
 
 After running through the steps and having telegraf installed, telegraf configured, and snmp running on ther server, I am having trouble getting telegraf to connect to the server. I run the command...
 
@@ -47,7 +47,7 @@ which came back with system information. SO I knew this was working correctly. W
 
 
 
-What I am going to do next...
+### What I am going to do next...
 
 This could be a configuration problem on the client side. I have done extensive troubleshooting from the server side, and have come up with nothing. All the ports are listening correctly and the snmpd.conf is configured to listen for my raspberry pi's ip address. 
 
