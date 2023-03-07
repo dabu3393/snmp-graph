@@ -56,3 +56,61 @@ Once I figure out the connection problem, I can go on and have this output so th
 From there, it should be smooth sailing to get this connected to grafana and having real time data being graphed.
 
 P.S. The digital ocean server is being very weird and not connecting via ssh right now, so I wasn't able to steal those files from FileZilla to upload to this repo. They will be up as soon as I can connect via ssh. SOOOOO many connection problems.
+
+
+# Update #2
+
+### Steps
+
+1. The first step is to install telegraf on my raspberry pi. To do that I ran the following.
+
+       wget -q https://repos.influxdata.com/influxdata-archive_compat.key
+       echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+       echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
+       sudo apt-get update && sudo apt-get install telegraf
+
+Just to make sure I have it up and running, I run...
+
+    sudo systemctl status telegraf.service
+
+This command will show the status of the service.
+
+2. Once I have telegraf up and running, I make sure I have snmp installed and listening on my server I want to scrape data from.
+
+    dnf install net-snmp net-snmp-utils
+
+I then wanted to check if it was running by running a...
+
+    sudo systemctl status snmpd
+
+If it wasn't running, I simply started it by running...
+
+    sudo systemctl start snmpd
+    sudo systemctl enable snmpd
+
+The enabled command has it start automatically everytime the system boots.
+
+3. Next, we need to go into the configuration file of telegraf and add a few lines to establish an snmp input and a prometheus output. This file is normally located in '/etc/telegraf/telegraf.conf'. Once you find the file, add the following lines of code.
+
+    [[inputs.snmp]]
+    agents = ["159.223.145.33"]
+    version = 2
+    community = "public"
+
+    [[outputs.prometheus_client]]
+    listen = ":9273"
+
+This configuration tells Telegraf to collect snmp data from "159.223.145.33" with a community string "public". The data will then output to the Prometheus client on port 9273.
+
+When you have added these lines, go ahead and save the file, then restart telegraf...
+
+    sudo systemctl restart telegraf
+
+4. From here, we need to check if Telegraf is collecting the data and outputting it to Prometheus. We can do that by visiting http://10.0.0.218:9273/metrics
+
+If configured correctly, it should show a list of metrics being collected from the server using snmp, like the following image.
+
+![prometheus metrics](./img/prometheus_metrics.png "Prometheus Output")
+
+
+
