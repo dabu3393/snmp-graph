@@ -106,11 +106,57 @@ When you have added these lines, go ahead and save the file, then restart telegr
 
     sudo systemctl restart telegraf
 
-4. From here, we need to check if Telegraf is collecting the data and outputting it to Prometheus. We can do that by visiting http://10.0.0.218:9273/metrics
+4. From here, we need to check if Telegraf is collecting the data and outputting it to Prometheus. We can do that by visiting 'http://10.0.0.218:9273/metrics' (this is just the case for my device, use the ip of the device you're using to run telegraf)
 
 If configured correctly, it should show a list of metrics being collected from the server using snmp, like the following image.
 
 ![prometheus metrics](./img/prometheus_metrics.png "Prometheus Output")
+
+> **_NOTE:_** If there's trouble connecting, you may have to configure the server to allow snmp traffic
+
+5. After we have seen that we are getting snmp data, the next step is to download prometheus. I have done this by running the command...
+
+    wget https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-armv7.tar.gz
+
+This will download it to the current directory. Then we need to extract the files by running...
+
+    tar -xzf prometheus-2.34.0.linux-armv7.tar.gz
+
+This will create a directory called 'prometheus-2.34.0.linux-armv7'. You can then start prometheus by running...
+
+    cd prometheus-2.34.0.linux-armv7
+    ./prometheus
+
+6. Prometheus is now running and by default will listen on port 9090. To see the Prometheus UI, you will need to naviagte to 'http://10.0.0.218:9090'. It should look like the following image.
+
+![prometheus ui](./img/prometheus_ui.png "Prometheus UI")
+
+From there you can select what query you want to see by selecting from the drop down menu or typing the query in the input box. Then press execute and a response will be given in the form of a value. This will be in Console mode which should look something like this.
+
+
+![prometheus console](./img/prometheus_console.png "Prometheus Console")
+
+You can also see that query response in the form of a graph by just changing the mode to graph. That should look something like this.
+
+![prometheus graph](./img/prometheus_graph.png "Prometheus Graph")
+
+### What's left
+
+I need to know how to take this prometheus output and have it show up in grafana. I have attempted this but I keep getting an error message when trying to add a new data source. The steps I have taken to get here is...
+
+    1. Login to my grafana account
+    2. Go to the settings and configuration screen.
+    3. Choose "Data Sources" and select "Prometheus" as my data source type.
+    4. In the "HTTP" section, I input 'http://10.0.0.218/9090'
+    5. I click on "Save & Test" to test the connection
+
+Following these steps leads to the error...
+
+    Error reading Prometheus: Post "http://10.0.0.218:9090/api/v1/query": dial tcp 10.0.0.218:9090: i/o timeout
+
+This is suggesting that Grafana is unable to connect to Prometheus at that IP. I'm guessing that this is a configuration problem, but not sure as I have gone through some troubleshooting with no avail.
+
+
 
 
 
