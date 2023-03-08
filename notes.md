@@ -1,4 +1,4 @@
-# Telegraf -> Prometheus -> Grafana
+# Telegraf &rarr; Prometheus &rarr; Grafana
 
 ## Steps
 
